@@ -22,6 +22,7 @@ Installtion requirements and how to install baseline methods can be found at htt
 
 
 **2. Reproduce results in the paper from sratch**
+
 It will take significant times to run the baselines and MCT.
 
 **3. Generate synthetic data**
