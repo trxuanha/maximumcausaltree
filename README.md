@@ -26,7 +26,7 @@ It will take significant times to run the baselines and MCT.
 
 **3. Generate synthetic data**
 
-**3. Run MCT with other data**
+**3. Setps to run MCT with other data**
 
 *Step 1*: Detect causal factors from data
 
