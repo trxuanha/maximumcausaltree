@@ -32,3 +32,5 @@ It will take significant times to run the baselines and MCT.
 
 *Step 2*: Generate Maximum causal trees for detected causal factors
 
+These causal trees can then be used to recommend the most effective interventions.
+
