@@ -1,5 +1,5 @@
 # Maximum Causal Tree
-An python implementation of Maximium Causal Tree in paper "Recommending the Most Effective Interventions to Improve Employment for Australians with Disability". This implementation also use some R packages to build a causal DAG and to convert results of baselines methods, which are implemented in R.
+An python implementation of Maximium Causal Tree in paper "Recommending the Most Effective Interventions to Improve Employment for Australians with Disability". This implementation also use some R packages to build a causal DAG and to convert results of baseline methods, which are implemented in R.
 
 # Installation
 Installation Requirements
