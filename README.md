@@ -24,9 +24,10 @@ Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder 
 
 **2. Reproduce results in the paper from sratch**
 
-It will take significant times to run the baselines and MCT.
+Step 1 - Generate synthetic data.
+    sas
 
-**3. Generate synthetic data**
+
 
 **4. Setps to run MCT with other data**
 
