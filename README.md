@@ -1,5 +1,5 @@
 # Maximum Causal Tree
-A python implementation of Maximium Causal Tree (MCT) in paper "Recommending the Most Effective Interventions to Improve Employment for Australians with Disability". This implementation also uses R packages to build a causal DAG and to convert results of baseline methods, which are implemented in R.
+A python implementation of Maximium Causal Tree (MCT) in paper "Recommending the Most Effective Interventions to Improve Employment for Australians with Disability". This implementation also uses R packages to build a causal DAG and to execute baseline methods.
 
 # Installation
 Installation requirements for Maximum Causal Tree
@@ -20,18 +20,49 @@ Installtion requirements and how to install baseline methods can be found at htt
 
 **1. Reproduce results in the paper with existing data**
 
+Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder "output/PerformanceEval/synthetic"
 
-**2. Reproduce results in the paper from sratch**
+**2. Reproduce results in the paper from scratch**
 
-It will take significant times to run the baselines and MCT.
+Step 1 - Generate synthetic data.
+    
+    Run python script GenerateSyntheticData.py to generate 4 synthetic datasets (four test scenarios) and 200 derived datasets.
+    
+    Generated datasets are stored in folder "input/synthetic".
+    
+Step 2 - Run four baselines methods with 200 derived datasets.
 
-**3. Generate synthetic data**
+    Run R script ProcessSynData.R in folder "RCode".
+    
+    Results are stored in folder "output/CausalTree", "output/FitBasedTree", "output/TOTree", and "output/TStatisticTree"
 
-**4. Setps to run MCT with other data**
+Step 3 - Convert these results to a summary format.
 
-*Step 1*: Detect causal factors from data
+    Run python script ProcessBaselineResults.py to convert the data.
+    
+    Summary files for each method are stored in the folder of each test scenario. 
 
-*Step 2*: Generate Maximum causal trees for detected causal factors
+Step 4 - Run the MCT method with four synthetic datasets.
 
-These causal trees can then be used to recommend the most effective interventions.
+    The method is run with different 300 epsilons to select the best epsilon for each dataset.
+    
+    Results are stored in folder "output/MCT".
+    
+Step 5 - Produce results in the paper.
+
+    Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder "output/PerformanceEval/synthetic".
+
+**3. Setps to run MCT with other data**
+
+Step 1 - Detect causal factors from data
+
+    Use R package pcalg to identify causes of an outcome.
+
+Step 2 - Build maximum causal trees for identified factors.
+
+    Build MCT trees using class DyCausalTree for each factor. Call method constructTree() to build trees.
+
+Step 3 - Recommended the most effective factor
+
+    Construct an object from class InterventionRecommender with a list of maximum causal trees. Use method makeRecommendation to generate recommendations.
 
