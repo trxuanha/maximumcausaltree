@@ -26,9 +26,21 @@ Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder 
 
 Step 1 - Generate synthetic data.
     
-    Run python script GenerateSyntheticData.py to generate 4 synthetic datasets and 200 derived datasets.
+    Run python script GenerateSyntheticData.py to generate 4 synthetic datasets (four test scenarios) and 200 derived datasets.
     
-    Generated datasets are stored in folder "input/synthetic"
+    Generated datasets are stored in folder "input/synthetic".
+    
+Step 2 - Run four baselines methods with 200 derived datasets.
+
+    Run R script ProcessSynData.R in folder "RCode".
+    
+    Results are stored in folder "output/CausalTree", "output/FitBasedTree", "output/TOTree", and "output/TStatisticTree"
+
+Step 3 - Convert these results to a summaryformat.
+
+    Run python script ProcessBaselineResults.py to convert the data.
+    
+    Summary files for each method are stored in the folder of each test scenario. 
 
 
 
