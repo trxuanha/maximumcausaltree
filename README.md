@@ -54,9 +54,18 @@ Step 5 - Produce results in the paper.
 
 **3. Setps to run MCT with other data**
 
-*Step 1*: Detect causal factors from data
+Step 1 - Detect causal factors from data
 
-*Step 2*: Generate Maximum causal trees for detected causal factors
+    Use R package pcalg to identify causes of an outcome.
+
+Step 2 - Build maximum causal trees for identified factors.
+
+Build MCT trees using class DyCausalTree. Call method constructTree() to build trees.
+
+Step 3 - Recommended the most effective factor
+
+Construct an object from class InterventionRecommender. Use method makeRecommendation to generate recommendations.
+
 
 These causal trees can then be used to recommend the most effective interventions.
 
