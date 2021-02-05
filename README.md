@@ -25,6 +25,7 @@ Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder 
 **2. Reproduce results in the paper from sratch**
 
 Step 1 - Generate synthetic data.
+    
     sas
 
 
