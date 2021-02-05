@@ -60,12 +60,9 @@ Step 1 - Detect causal factors from data
 
 Step 2 - Build maximum causal trees for identified factors.
 
-Build MCT trees using class DyCausalTree. Call method constructTree() to build trees.
+    Build MCT trees using class DyCausalTree for each factor. Call method constructTree() to build trees.
 
 Step 3 - Recommended the most effective factor
 
-Construct an object from class InterventionRecommender. Use method makeRecommendation to generate recommendations.
-
-
-These causal trees can then be used to recommend the most effective interventions.
+    Construct an object from class InterventionRecommender with a list of maximum causal trees. Use method makeRecommendation to generate recommendations.
 
