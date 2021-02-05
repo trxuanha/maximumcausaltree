@@ -1,0 +1,5 @@
+Attributes X and causal factor F in the result files of MCT are ordinal break points, not orginal values. This is because we use the approximate binning strategy,i.e. function binningAttributeV4, to reduce the number of values needed to be checked.
+
+To convert to original values, use function convertToOrignalBreakPoint.
+
+If we dont use this strategy, the result file will contain orginal values. 
