@@ -42,9 +42,17 @@ Step 3 - Convert these results to a summary format.
     
     Summary files for each method are stored in the folder of each test scenario. 
 
+Step 4 - Run the MCT method with four synthetic datasets.
 
+    The method is run with different 300 epsilons to select the best epsilon for each dataset.
+    
+    Results are stored in folder "output/MCT".
+    
+Step 5 - Produce results in the paper.
 
-**4. Setps to run MCT with other data**
+    Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder "output/PerformanceEval/synthetic".
+
+**3. Setps to run MCT with other data**
 
 *Step 1*: Detect causal factors from data
 
