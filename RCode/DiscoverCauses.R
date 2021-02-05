@@ -1,6 +1,5 @@
 library(pcalg)
 library(graph)
-
 inBasePath <- paste (dirname(getwd()), '/input/synthetic/', sep='')
 
 targetVairable<-'Y'

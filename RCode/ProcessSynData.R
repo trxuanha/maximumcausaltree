@@ -1,9 +1,6 @@
-
 source("SynCausalTree.R")
 source("LiftUtility.R")
-
-
-baselinesEvaluation <- function(fileName, testType){
+baselinesEvaluation <- function(fileName, testType, causalFactor, outcomeName){
   
   folderName = ''
   splitRule = ''
@@ -54,7 +51,7 @@ baselinesEvaluation <- function(fileName, testType){
     for(timecn in 1: 5){
       training_data_file <- paste (inputPath,'/',fileName, '_train_',timecn,'.csv', sep='') 
       trainingData <-read.csv(file = training_data_file)
-      CDTmodel <- buildSynPoisCausalDTModel(trainingData, splitRule= splitRule, cvRule = cvRule)
+      CDTmodel <- buildSynPoisCausalDTModel(trainingData, causalFactor, outcomeName, splitRule= splitRule, cvRule = cvRule)
       tesing_data_file <- paste (inputPath,'/',fileName, '_test_',timecn,'.csv', sep='') 
       subDir = fileCount
       dir.create(file.path(outbase), showWarnings = FALSE)
@@ -70,27 +67,49 @@ baselinesEvaluation <- function(fileName, testType){
     
 }
 
+###
+outcomeName = ''
+causalFactor <- '' 
+readOutcome = FALSE
+outcomeMarker = '==Outcome=='
+
+causeFile <- paste (dirname(getwd()), '/output/Cause/synthetic/causes.txt', sep='') 
+myLines<- readLines(causeFile)
 
 
-baselinesEvaluation('Case1', 'CT')
-baselinesEvaluation('Case2', 'CT')
-baselinesEvaluation('Case3', 'CT')
-baselinesEvaluation('Case4', 'CT')
+for (line in myLines){
+  
+  currentVal <- trimws(line) 
+  
+  if(grepl(outcomeMarker, currentVal))
+    readOutcome <- TRUE
+  else if(readOutcome){
+    outcomeName <- currentVal
+    break
+    
+  }else{
+    causalFactor <- currentVal
+    
+  }
+      
+}
 
-baselinesEvaluation('Case1', 'TOT')
-baselinesEvaluation('Case2', 'TOT')
-baselinesEvaluation('Case3', 'TOT')
-baselinesEvaluation('Case4', 'TOT')
+baselinesEvaluation('Case1', 'CT', causalFactor, outcomeName)
+baselinesEvaluation('Case2', 'CT', causalFactor, outcomeName)
+baselinesEvaluation('Case3', 'CT', causalFactor, outcomeName)
+baselinesEvaluation('Case4', 'CT', causalFactor, outcomeName)
 
-baselinesEvaluation('Case1', 'tstats')
-baselinesEvaluation('Case2', 'tstats')
-baselinesEvaluation('Case3', 'tstats')
-baselinesEvaluation('Case4', 'tstats')
+baselinesEvaluation('Case1', 'TOT', causalFactor, outcomeName)
+baselinesEvaluation('Case2', 'TOT', causalFactor, outcomeName)
+baselinesEvaluation('Case3', 'TOT', causalFactor, outcomeName)
+baselinesEvaluation('Case4', 'TOT', causalFactor, outcomeName)
 
-baselinesEvaluation('Case1', 'fit')
-baselinesEvaluation('Case2', 'fit')
-baselinesEvaluation('Case3', 'fit')
-baselinesEvaluation('Case4', 'fit')
+baselinesEvaluation('Case1', 'tstats', causalFactor, outcomeName)
+baselinesEvaluation('Case2', 'tstats', causalFactor, outcomeName)
+baselinesEvaluation('Case3', 'tstats', causalFactor, outcomeName)
+baselinesEvaluation('Case4', 'tstats', causalFactor, outcomeName)
 
-
-
+baselinesEvaluation('Case1', 'fit', causalFactor, outcomeName)
+baselinesEvaluation('Case2', 'fit', causalFactor, outcomeName)
+baselinesEvaluation('Case3', 'fit', causalFactor, outcomeName)
+baselinesEvaluation('Case4', 'fit', causalFactor, outcomeName)

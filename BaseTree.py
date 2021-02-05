@@ -23,7 +23,3 @@ class BsTree:
 
     def constructTree(self, t, x, y):
         None
-        
-        
-        
-    

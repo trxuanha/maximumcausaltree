@@ -6,19 +6,15 @@ import pandas as pd
 from EvaluationUtil import *
 import warnings
 warnings.filterwarnings("ignore")
-
 maxTreeDepth = 5
 minSize = 50
 fold = 5
-
 BASE_DIR = os.getcwd()
 outputPath = os.path.join(BASE_DIR, 'output',  'MCT', 'synthetic','Case2')
 MdataPath = os.path.join(BASE_DIR, 'input','synthetic' ,'Case2.csv')
 outputName = ''
-
 causeFile = os.path.join(BASE_DIR, 'output/Cause/synthetic/causes.txt')
 treatmentNameList, outcomeName =  populateCausesOutcome(causeFile)
-    
 epsilonObList = [0.05, 0.1, 0.15]
 epsilonEffList = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
 epsilonTreatList = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]

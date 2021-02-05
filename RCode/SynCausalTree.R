@@ -1,15 +1,15 @@
 library(causalTree)
 library(dplyr)
 
-buildSynPoisCausalDTModel<- function(trainingData, splitRule='CT', cvRule = 'CT'){
+buildSynPoisCausalDTModel<- function(trainingData, causalFactor, outcomeName, splitRule='CT', cvRule = 'CT'){
   
-  reg<-glm(T~. -Y
+  reg<-glm(as.formula(paste(causalFactor, ' ~. ', '-',outcomeName, sep= ""))
            , family=binomial
            , data=trainingData)
   
   propensity_scores = reg$fitted
-  tree1 <- causalTree(Y~ .
-                      , data = trainingData, treatment = trainingData$T,
+  tree1 <- causalTree(as.formula(paste(outcomeName, ' ~. ', sep= ""))
+                      , data = trainingData, treatment = trainingData[[causalFactor]],
                       split.Rule = splitRule, cv.option = cvRule, split.Honest = T, cv.Honest = T, split.Bucket = F, 
                       xval = 5, cp = 0, propensity = propensity_scores)
   
@@ -18,7 +18,7 @@ buildSynPoisCausalDTModel<- function(trainingData, splitRule='CT', cvRule = 'CT'
   results <- list()
   treeModel1<- list()
   treeModel1$model <- tree1
-  treeModel1$factor <- 'T'
+  treeModel1$factor <- 'F'
   results = c(results, list(treeModel1))
   
 }
