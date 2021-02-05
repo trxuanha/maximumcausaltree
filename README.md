@@ -26,7 +26,9 @@ Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder 
 
 Step 1 - Generate synthetic data.
     
-    sas
+    Run python script GenerateSyntheticData.py to generate 4 synthetic datasets and 200 derived datasets.
+    
+    Generated datasets are stored in folder "input/synthetic"
 
 
 
