@@ -36,7 +36,7 @@ Step 2 - Run four baselines methods with 200 derived datasets.
     
     Results are stored in folder "output/CausalTree", "output/FitBasedTree", "output/TOTree", and "output/TStatisticTree"
 
-Step 3 - Convert these results to a summaryformat.
+Step 3 - Convert these results to a summary format.
 
     Run python script ProcessBaselineResults.py to convert the data.
     
