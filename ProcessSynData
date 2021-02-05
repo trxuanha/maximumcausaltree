@@ -1,0 +1,41 @@
+#!/bin/bash
+
+
+### Job Name
+#SBATCH --job-name=ProcessSynData
+
+### Set email type for job
+### Accepted options: NONE, BEGIN, END, FAIL, ALL
+#SBATCH --mail-type=END
+
+### email address for user
+###SBATCH --mail-user=None
+
+### Queue name that job is submitted to
+#SBATCH --partition=tango
+
+### Request resources
+#SBATCH --ntasks=8
+#SBATCH --mem=64gb
+
+echo Running on host `hostname`
+echo Time is `date`
+
+module load miniconda
+source activate pythontrahx001
+
+# Generate synthetic data
+python GenerateSyntheticData.py
+
+# Process data
+python ProcSyn1.py
+python PostProcSyn1.py
+
+python ProcSyn2.py
+python PostProcSyn2.py
+
+python ProcSyn3.py
+python PostProcSyn3.py
+
+python ProcSyn4.py
+python PostProcSyn4.py
