@@ -22,7 +22,7 @@ Installtion requirements and how to install baseline methods can be found at htt
 
 Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder "output/PerformanceEval/synthetic"
 
-**2. Reproduce results in the paper from sratch**
+**2. Reproduce results in the paper from scratch**
 
 Step 1 - Generate synthetic data.
     
