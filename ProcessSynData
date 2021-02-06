@@ -1,9 +1,5 @@
 #!/bin/bash
 
-
-# Generate synthetic data
-python GenerateSyntheticData.py
-
 # Process data
 python ProcSyn1.py
 python PostProcSyn1.py
