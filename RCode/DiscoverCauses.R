@@ -4,7 +4,7 @@ inBasePath <- paste (dirname(getwd()), '/input/synthetic/', sep='')
 
 targetVairable<-'Y'
 
-factors <- c('F')
+factors <- c('F') # manupulable factors
 
 data_file <- paste (inBasePath, 'Case1.csv', sep='')
 inputDat <-read.csv(file = data_file)
