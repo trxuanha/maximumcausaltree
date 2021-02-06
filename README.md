@@ -20,7 +20,7 @@ Installtion requirements and how to install baseline methods can be found at htt
 
 **1. Reproduce results in the paper with existing data**
 
-Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder "output/PerformanceEval/synthetic"
+    Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder "output/PerformanceEval/synthetic"
 
 **2. Reproduce results in the paper from scratch**
 
@@ -44,7 +44,7 @@ Step 3 - Convert these results to a summary format.
 
 Step 4 - Run the MCT method with four synthetic datasets.
 
-    The method is run with different 300 epsilons to select the best epsilon for each dataset.
+    Run shell script ProcessSynData to process data with MCT. This script calls python scripts ProbSyn*.py and PostProcSyn*.py to process data.  Note that python scripts ProbSyn*.py are written to run in parallel mode on a Unix-like system, e.g. Linux.
     
     Results are stored in folder "output/MCT".
     
