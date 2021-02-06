@@ -56,11 +56,11 @@ Step 5 - Produce results in the paper.
 
 Step 1 - Detect causal factors from data
 
-    Use R package pcalg to identify causes of an outcome.
+    Use R package pcalg to identify causes of an outcome. Sample file is DiscoverCauses.R
 
 Step 2 - Build maximum causal trees for identified factors.
 
-    Build MCT trees using class DyCausalTree for each factor. Call method constructTree() to build trees.
+    Build MCT trees using class DyCausalTree for each factor. Call method constructTree() to build a tree.
 
 Step 3 - Recommended the most effective factor
 
