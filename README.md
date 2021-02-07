@@ -56,7 +56,7 @@ Step 5 - Produce results in the paper.
 
 Step 1 - Detect causal factors from data
 
-    Use R package pcalg to identify causes of an outcome. Sample file is DiscoverCauses.R
+    Use R package pcalg to identify causes of an outcome. Sample file is DiscoverCauses.R in folder "RCode".
 
 Step 2 - Build maximum causal trees for identified factors.
 
