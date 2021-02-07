@@ -112,3 +112,20 @@ estimateUpLiftScore<- function(model, outComeColName, estimationType, infileName
   write.csv(data,fullPath, row.names = FALSE)
   
 }
+
+estimateCDTLiftScore <-function(models, recordForEstimate){
+    
+  prevLift = -9999
+  treatmentName = 'NA'
+  result = 0
+  
+  for(i in 1: length(models)){
+    treeModel = models[[i]]  
+    result <- predict(treeModel$model, recordForEstimate)
+    if(prevLift < result){
+      prevLift <- result
+      treatmentName <- treeModel$factor
+    }
+  }
+  return (list(prevLift, treatmentName))  
+}
