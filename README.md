@@ -44,7 +44,7 @@ Step 3 - Convert these results to a summary format.
 
 Step 4 - Run the MCT method with four synthetic datasets.
 
-    Run shell script ProcessSynData to process data with MCT. This script calls python scripts ProbSyn*.py and PostProcSyn*.py to process data.  Note that python scripts ProbSyn*.py are written to run in parallel mode on a Unix-like system, e.g. Linux.
+    Run shell script ProcessSynData to process data with MCT. This script calls python scripts ProbSyn*.py and PostProcSyn*.py to process data.  Note that python scripts ProbSyn*.py are written to run in parallel mode on a Unix-like system.
     
     Results are stored in folder "output/MCT".
     
