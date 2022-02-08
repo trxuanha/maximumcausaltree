@@ -17,12 +17,7 @@ Installation requirements for Maximum Causal Tree
 Installtion requirements and how to install baseline methods can be found at https://github.com/susanathey/causalTree
 
 # Usage
-
-**1. Reproduce results in the paper with existing data**
-
-    Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder "output/PerformanceEval/synthetic"
-
-**2. Reproduce results in the paper from scratch**
+**Reproduce results in the paper from scratch**
 
 Step 1 - Generate synthetic data.
     
