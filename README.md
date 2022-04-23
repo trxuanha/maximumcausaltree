@@ -47,7 +47,7 @@ Step 5 - Produce results in the paper.
 
     Run python script "GeneratePaperResultsForSyn.py". Results are stored in folder "output/PerformanceEval/synthetic".
 
-**3. Setps to run MCT with other data**
+**Setps to run MCT with other data**
 
 Step 1 - Detect causal factors from data
 
