@@ -1,5 +1,7 @@
 # Maximum Causal Tree
-A Python implementation of Maximium Causal Tree (MCT) in paper "Recommending the Most Effective Intervention to Improve Employment for Australians with Disability". This implementation also uses R packages to build a causal DAG and to execute baseline methods.
+A Python implementation of Maximium Causal Tree (MCT) in paper "Recommending the Most Effective Intervention to Improve Employment for Australians with Disability". In the 27th ACM SIGKDD Conference on Knowledge Discovery & Data Mining (KDD 2021), pages 3616-3626. 
+
+This paper can be found at: https://dl.acm.org/doi/abs/10.1145/3447548.3467095
 
 # Installation
 Installation requirements for Maximum Causal Tree
