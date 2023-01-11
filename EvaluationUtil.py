@@ -9,23 +9,26 @@ from os import path
 from scipy import stats
 import statistics
 
-from DyCausalTree import *
+from MaximumCausalTree import *
 from InterventionRecommdender import *
         
-def doCrossValidationV2(Mdataset, Sdataset, maxTreeDepth, minSize, outputPath, outputName, outcomeName, treatmentNameList, fold, imagePath, epsilon, excludeVar= set()): 
+def doValidation(Mdataset, Sdataset, maxTreeDepth, minSize, outputPath, outputName, outcomeName, treatmentNameList, fold, imagePath, epsilon, excludeVar= set()): 
     orderCount = 1 
-    for icount in range(20, 20 + fold): # 20 ok
+    for icount in range(1, 1 + fold):
+    
+        ## split dataset into data for model training and data for model testing
         Mtrain, Mtest = train_test_split(Mdataset, test_size=0.30, random_state=icount, shuffle=True)
         Mtrain.reset_index(drop=True, inplace=True)
         Mtest.reset_index(drop=True, inplace=True)      
         MtreeList = []
         for treatmentName in treatmentNameList:
             covariateNames = list(set(Mdataset.columns) - {treatmentName, outcomeName} - excludeVar) 
-            weightName = 'WEIGHT'
             trainForFac = Mtrain.copy()
-            trainForFac[weightName] = 1 
-            dyTree = DyCausalTree(trainForFac, treatmentName, outcomeName, weightName, covariateNames, maxTreeDepth, minSize, None)
+            
+            # Build maximum causal tree
+            dyTree = MaximumCausalTree(trainForFac, treatmentName, outcomeName,covariateNames, maxTreeDepth, minSize, None)
             dyTree.epsilon = epsilon
+            ## build logistic regression models for different break points that are used for binarization
             modelList, uniqueTrVals = getAllBinaryPropensityWithMinV2(trainForFac, covariateNames, treatmentName)
             dyTree.propenModels = modelList
             dyTree.treatmentIntervals = uniqueTrVals
@@ -36,7 +39,8 @@ def doCrossValidationV2(Mdataset, Sdataset, maxTreeDepth, minSize, outputPath, o
         recommender =  InterventionRecommender(MtreeList)
         ## Do testing for test data
         results, variance = recommender.makeRecommendation(Mtest)
-        results = estimateImprovmentCurve (results, outcomeName)
+        
+        results = estimateUplift(results, outcomeName)
         resultFile = os.path.join(outputPath, 'recommendation_'+ outputName + '_' + str(orderCount) +'.csv')
         results.to_csv(resultFile, index=False)          
         orderCount = orderCount + 1
@@ -210,7 +214,8 @@ def areaUnderCurve(models, modelNames):
         modelAreas.append(area)  
     return modelAreas
     
-def estimateImprovmentCurve(estimatedImprovements, outcomeName):   
+
+def estimateUplift(estimatedImprovements, outcomeName):   
     estimatedImprovements['ABS_Improvement'] = estimatedImprovements['Improvement'].abs()
     estimatedImprovements.sort_values(by=['ABS_Improvement'], ascending = [False], inplace=True, axis=0)
     estimatedImprovements = estimatedImprovements.reset_index(drop=True)    

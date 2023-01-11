@@ -45,13 +45,8 @@ def estimateBinaryPropensity(dataset, covariates, treatment):
     dataset[treatment + '_' + str(1)] = result[:,1]  
     return dataset
     
-def binningAttribute(dataset, attributeName, maxBin):
-    binLabel = []
-    for icount in range(1, maxBin + 1):
-        binLabel.append(icount)  
-    return pd.cut(dataset[attributeName], maxBin, labels=binLabel)
         
-def binningAttributeV4(dataset, attributeName, outcomeName, diffSig):
+def binningAttribute(dataset, attributeName, outcomeName, diffSig):
     newDataset = dataset.copy()    
     newDataset.sort_values(by=[attributeName, outcomeName], ascending = [True, True ], inplace=True, axis=0)
     newDataset = newDataset.reset_index(drop=True) 
@@ -128,62 +123,7 @@ def convertToOrignalBreakPoint(index, breakPoints, realbreak):
         return breakPoints[lowInt - 2]
     else:
         return breakPoints[lowInt]
-        
-def binningAttributeV3(dataset, attributeName, outcomeName, diffSig):
-    newDataset = dataset.copy()    
-    newDataset.sort_values(by=[attributeName, outcomeName], ascending = [True, True ], inplace=True, axis=0)
-    newDataset = newDataset.reset_index(drop=True)  
-    icount = 0
-    prevStartIndex = -1
-    prevEndIndex = -1
-    breakPoints = np.array([])
-    startIndex = 0
-    endIndex = -1
-    currentSize = 0
-    minStep = 5
-    for icount in range (0, newDataset.shape[0]):
-        if(currentSize < minStep):       
-            endIndex = endIndex + 1
-            currentVal = newDataset[attributeName].iloc[endIndex]
-            currentSize = currentSize + 1
-            continue
-        if(newDataset[attributeName].iloc[icount] == currentVal):
-            endIndex = endIndex + 1
-            currentSize = currentSize + 1
-            continue
-        if(prevStartIndex >= 0):
-            a = newDataset[outcomeName].iloc[prevStartIndex: prevEndIndex + 1]    
-            b = newDataset[outcomeName].iloc[startIndex: endIndex + 1]
-            tscore, pscore = stats.ttest_ind(a,b)
-            if((np.isnan(tscore)) or (abs(tscore) < diffSig)):
-                # merge to previous segment        
-                prevEndIndex = endIndex
-                startIndex = icount
-                endIndex = icount
-                currentSize = 1   
-            else:
-                # Add previous break point
-                breakPoints = np.append (breakPoints, dataset[attributeName].iloc[prevEndIndex])
-                prevStartIndex = startIndex
-                prevEndIndex = endIndex
-                # reset
-                startIndex = icount
-                endIndex = icount
-                currentSize = 1         
-        else:
-            prevStartIndex = 0
-            prevEndIndex = endIndex
-            startIndex = icount
-            endIndex = icount
-            currentSize = 1    
-    breakPoints = np.sort(breakPoints)
-    breakPoints = np.insert(breakPoints,0, breakPoints[0] - 1)
-    result= dataset.copy()
-    result[attributeName] = result[attributeName].apply(lambda x: 1 
-                                                if x < breakPoints[0] 
-                                                else (len(breakPoints) if x >= breakPoints[-1] 
-                                                else np.argmin(breakPoints <= x) ))
-    return result[attributeName] 
+         
 
 def getAllBinaryPropensityWithMinV2(dataset, covariateNames, treatmentName):
     newDataset = dataset.copy()
@@ -256,7 +196,7 @@ def inverseTransformOutcome(treatmentEffect, propensityScore, Treatment):
     potentialOutcome = treatmentEffect*propensityScore* (1- propensityScore)/(Treatment - propensityScore)
     return potentialOutcome
 
-def populateCausesOutcome(filePath):
+def populateTreatments(filePath):
     file1 = open(filePath, 'r')
     Lines = file1.readlines()
     treatmentNameList = []

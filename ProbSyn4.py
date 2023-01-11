@@ -15,7 +15,7 @@ outputPath = os.path.join(BASE_DIR, 'output',  'MCT', 'synthetic','Case4')
 MdataPath = os.path.join(BASE_DIR, 'input','synthetic' ,'Case4.csv')
 outputName = ''
 causeFile = os.path.join(BASE_DIR, 'output/Cause/synthetic/causes.txt')
-treatmentNameList, outcomeName =  populateCausesOutcome(causeFile)
+treatmentNameList, outcomeName =  populateTreatments(causeFile)
 epsilonObList = [0.05, 0.1, 0.15]
 epsilonEffList = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
 epsilonTreatList = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
@@ -27,7 +27,8 @@ print('start process dataset')
 Mdataset = pd.read_csv(MdataPath,  encoding = "ISO-8859-1", engine='python')
 columsntoAproximate = list(set(Mdataset.columns) - {outcomeName, 'Index'})
 for col in columsntoAproximate:
-    Mdataset[col], breakpoints = binningAttributeV4(Mdataset, col, outcomeName, diffSigA)
+    ## discretise variables to reduce the research time
+    Mdataset[col], breakpoints = binningAttribute(Mdataset, col, outcomeName, diffSigA)
     Mdataset[col] = Mdataset[col].astype(float)
 print('end of process dataset')
 
@@ -54,7 +55,7 @@ def wrapperPara(x):
     epsilon = [epsilonOb, epsilonEff, epsilonTreat ]
     print(' start of proc ID' + str(os.getpid()))
     MdatasetforCross = Mdataset.copy()             
-    doCrossValidationV2(MdatasetforCross, None, maxTreeDepth, minSize, 
+    doValidation(MdatasetforCross, None, maxTreeDepth, minSize, 
                      dirPath, outputName, outcomeName, treatmentNameList, fold, imagePath, epsilon)                     
     print(' end of proc ID' + str(os.getpid()))
     return 1

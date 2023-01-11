@@ -11,7 +11,7 @@ from BaseTree import *
 from GlobalVariables import *
 from Utility import *
     
-class DyCausalNode(BsNode):
+class CausalNode(BsNode):
     
     def __init__(self, depth):
         super().__init__()
@@ -25,7 +25,9 @@ class DyCausalNode(BsNode):
         self.id = uuid.uuid1()
         self.tree = None
 
-    def searchForBestMinTreatment(self, t, covX, y, weight, datatset, treatmentName, minSize, alpha, train_to_est_ratio):     
+    # Search for the best treatment level: go through all levels and compute treatment effects. 
+    # The best level is the one with the largest treatment effect (Algorithm 3 in the paper)
+    def searchForBestMinTreatment(self, t, covX, y, datatset, treatmentName, minSize, alpha, train_to_est_ratio):     
         global globalDataSet
         noneVal = (-np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf)
         minVal = np.min(t)
@@ -93,9 +95,10 @@ class DyCausalNode(BsNode):
         bestTreatmentMean = treatmentMean[max_err]
         return bestEffect, bestMse, bestSplit, bestVMse, bestControlMean, bestTreatmentMean
     
-    def estimateValues(self, t, covX, y, w, datatset, treatmentName, minSize, alpha, train_to_est_ratio): 
+    #Compute the min treatment level (the best level) and corresponding treatment effect for a node (a subgroup)
+    def estimateValues(self, t, covX, y, datatset, treatmentName, minSize, alpha, train_to_est_ratio): 
         
-        bestEffect, bestMse, bestSplit, bestVMse, bestControlMean, bestTreatmentMean = self.searchForBestMinTreatment(t, covX, y, w, datatset, treatmentName, minSize, alpha, train_to_est_ratio)
+        bestEffect, bestMse, bestSplit, bestVMse, bestControlMean, bestTreatmentMean = self.searchForBestMinTreatment(t, covX, y, datatset, treatmentName, minSize, alpha, train_to_est_ratio)
         self.effect = bestEffect
         self.negRisk = bestVMse * t.shape[0] # include variance
         self.minTreatment  = bestSplit
@@ -104,7 +107,8 @@ class DyCausalNode(BsNode):
         self.controlMean = bestControlMean
         self.treatmentMean = bestTreatmentMean
         
-    def doSplit(self, covariateNames, treatmentName, outcomeName, weightName, maxTreeDepth, minSize, alpha, train_to_est_ratio, criteria=None):
+    #Recursively split the node. This is Algorithm 2 in the paper
+    def doSplit(self, covariateNames, treatmentName, outcomeName,  maxTreeDepth, minSize, alpha, train_to_est_ratio, criteria=None):
         global globalDataSet
         if(self.depth >= maxTreeDepth):
             self.isLeaf = True
@@ -149,24 +153,22 @@ class DyCausalNode(BsNode):
                 leftData = globalDataSet.query(newLeftCriteria)
                 r_t = rightData[treatmentName].to_numpy()
                 r_y = rightData[outcomeName].to_numpy()
-                r_w = rightData[weightName].to_numpy()
                 l_t = leftData[treatmentName].to_numpy()
                 l_y = leftData[outcomeName].to_numpy()
-                l_w = leftData[weightName].to_numpy()
                                     
                 # estimate risk for the right node
-                rightNode = DyCausalNode(self.depth + 1)
+                rightNode = CausalNode(self.depth + 1)
                 rightNode.tree = self.tree
                 
                 covXr = rightData[self.tree.confdCovariateNames].to_numpy()
-                rightNode.estimateValues(r_t, covXr, r_y, r_w, rightData, treatmentName, minSize, alpha, train_to_est_ratio)
+                rightNode.estimateValues(r_t, covXr, r_y, rightData, treatmentName, minSize, alpha, train_to_est_ratio)
                 rightNode.condition = rightOperStr
                                            
                 # estimate risk for the left node
-                leftNode = DyCausalNode(self.depth + 1)
+                leftNode = CausalNode(self.depth + 1)
                 leftNode.tree = self.tree
                 covXl = leftData[self.tree.confdCovariateNames].to_numpy()
-                leftNode.estimateValues(l_t, covXl, l_y, l_w, leftData, treatmentName, minSize, alpha, train_to_est_ratio) 
+                leftNode.estimateValues(l_t, covXl, l_y, leftData, treatmentName, minSize, alpha, train_to_est_ratio) 
                 leftNode.condition = leftOperStr                
                 condition1 = rightNode.negRisk + leftNode.negRisk - self.negRisk
                 if(np.isinf(condition1)):
@@ -185,6 +187,7 @@ class DyCausalNode(BsNode):
         icountc = 0
         for conditionIns in tempConditionList:    
             splitPoint = splitPointList[icountc]
+            # Search for an optimal split set
             archiveConditionList, archiveBoxList, archiveSplitList = self.__searchForEpsiNonDominance(conditionIns, splitPoint, 
                                                                       archiveConditionList, archiveBoxList, archiveSplitList, self.tree.epsilon, False)
             icountc = icountc + 1
@@ -202,8 +205,8 @@ class DyCausalNode(BsNode):
             self.splitVal = bestSplit[3]
             bestLeftCriteria = bestSplit[4]
             bestRightCriteria = bestSplit[5]
-            self.leftChild.doSplit(covariateNames, treatmentName, outcomeName, weightName, maxTreeDepth, minSize, alpha, train_to_est_ratio, bestLeftCriteria)
-            self.rightChild.doSplit(covariateNames, treatmentName, outcomeName,weightName,  maxTreeDepth, minSize, alpha, train_to_est_ratio, bestRightCriteria)           
+            self.leftChild.doSplit(covariateNames, treatmentName, outcomeName, maxTreeDepth, minSize, alpha, train_to_est_ratio, bestLeftCriteria)
+            self.rightChild.doSplit(covariateNames, treatmentName, outcomeName, maxTreeDepth, minSize, alpha, train_to_est_ratio, bestRightCriteria)           
             
         else:
             self.isLeaf = True
@@ -220,6 +223,7 @@ class DyCausalNode(BsNode):
         npEpsilon = np.array(epsilon) 
         return np.floor(np.log(candidates)/np.log(1 + npEpsilon))
     
+    # Search for an optimal split set (Algorithm 1 in the paper)
     def __searchForEpsiNonDominance(self, candidate, splitPoint, archiveList, archiveBoxList, archiveSplitList, epsilon, debugs):
         nbrObj = len(epsilon)
         cBox = self.boxEstimate(candidate, epsilon)
@@ -271,13 +275,13 @@ class DyCausalNode(BsNode):
             
         return archiveList, archiveBoxList, archiveSplitList 
         
-class DyCausalTree(BsTree):
+class MaximumCausalTree(BsTree):
     
-    def __init__(self, dataset, treatmentName, outcomeName, weightName, covariateNames, maxTreeDepth, minSize, propenModel):
+    def __init__(self, dataset, treatmentName, outcomeName, covariateNames, maxTreeDepth, minSize, propenModel):
         global globalDataSet
         super().__init__()
         self.train_to_est_ratio = 0
-        self.root = DyCausalNode(0)
+        self.root = CausalNode(0)
         self.root.tree = self
         self.dataset = dataset
         self.maxTreeDepth = maxTreeDepth
@@ -286,7 +290,6 @@ class DyCausalTree(BsTree):
         self.outcomeName = outcomeName
         self.treatmentName = treatmentName
         self.covariateNames = covariateNames
-        self.weightName = weightName
         self.id = uuid.uuid1()
         self.propenModel = propenModel             
         self.treatmentIntervals = None
@@ -300,10 +303,8 @@ class DyCausalTree(BsTree):
         
     def __predict(self, currentNode, individual):
         if currentNode.isLeaf:
-
-            propen_score = getOrdinalProba(self.propenModel, currentNode.minTreatment, individual, self.covariateNames )
             
-            return currentNode.effect, currentNode.minTreatment, currentNode.id, currentNode.controlMean, currentNode.treatmentMean, propen_score
+            return currentNode.effect, currentNode.minTreatment, currentNode.id, currentNode.controlMean, currentNode.treatmentMean
         else:
             xVal = individual[currentNode.splitVar]
             if xVal >= currentNode.splitVal:
@@ -316,46 +317,19 @@ class DyCausalTree(BsTree):
     def predictIndividual(self, jobSeeker):
         return self.__predict(self.root, jobSeeker) 
         
-    def predictMultiple(self, jobSeekers):
-        predictedEffect = np.array([])
-        predictedMintreatment = np.array([])
-        subgroupList = np.array([])
-        controlMeanList = np.array([])
-        treatmentMeanList = np.array([])
-        propenScoreList = np.array([])
-        for index, individual in jobSeekers.iterrows():
-            effect, minTreatment, sgID, controlMean, treatmentMean, propen_score = self.__predict(self.root, individual)
-            predictedEffect = np.append (predictedEffect, effect)
-            predictedMintreatment = np.append (predictedMintreatment, minTreatment)
-            subgroupList = np.append (subgroupList, sgID)
-            controlMeanList = np.append (controlMeanList, controlMean)
-            treatmentMeanList = np.append (treatmentMeanList, treatmentMean)
-            propenScoreList = np.append (propenScoreList, propen_score)
-            
-        ser = pd.Series(predictedEffect)
-        jobSeekers['Effect'] = ser 
-        ser = pd.Series(predictedMintreatment)
-        jobSeekers['Mintreatment'] = ser
-        ser = pd.Series(subgroupList)
-        jobSeekers['SubGroupID'] = ser
-        ser = pd.Series(controlMeanList)	
-        jobSeekers['controlMean'] = ser	
-        ser = pd.Series(treatmentMeanList)	
-        jobSeekers['treatmentMean'] = ser      
-        ser = pd.Series(propenScoreList)	
-        jobSeekers['propenScore'] = ser        
-        
-        return jobSeekers
     
     def constructTree(self):
 
         global globalDataSet
         t = self.dataset[self.treatmentName].to_numpy()
-        y = self.dataset[self.outcomeName].to_numpy()
-        w = self.dataset[self.weightName].to_numpy()        
+        y = self.dataset[self.outcomeName].to_numpy()        
         covX = self.dataset[self.confdCovariateNames].to_numpy()
-        self.root.estimateValues(t, covX, y, w, self.dataset, self.treatmentName, self.minSize, self.varianceAlpha, self.train_to_est_ratio )
-        self.root.doSplit(self.covariateNames, self.treatmentName, self.outcomeName, self.weightName, self.maxTreeDepth, self.minSize, self.varianceAlpha, self.train_to_est_ratio,None)                
+        
+        # Estimate min treatment level and treatment effect for the root node
+        self.root.estimateValues(t, covX, y, self.dataset, self.treatmentName, self.minSize, self.varianceAlpha, self.train_to_est_ratio )
+        
+        # Recursively split the root node to build the tree
+        self.root.doSplit(self.covariateNames, self.treatmentName, self.outcomeName, self.maxTreeDepth, self.minSize, self.varianceAlpha, self.train_to_est_ratio,None)                
                 
     def __buildVisTree(self, causalNode, visPa=None):
         curNode= Node(causalNode.condition, parent = visPa, condition = causalNode.condition, \
